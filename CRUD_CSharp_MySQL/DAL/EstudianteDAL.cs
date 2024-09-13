@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using CRUD_CSharp_MySQL.Config;
 using CRUD_CSharp_MySQL.Models;
-using MySqlConnector;
-//using MySql.Data.MySqlClient;
+
+using MySql.Data.MySqlClient;
 
 namespace CRUD_CSharp_MySQL.DAL
 {

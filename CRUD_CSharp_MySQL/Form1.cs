@@ -21,9 +21,9 @@ namespace CRUD_CSharp_MySQL
 
         private void ListarEstudiantes()
         {
-            EstudianteDAL estudianteBLL = new EstudianteDAL();
-            List<Estudiante> estudiantes = estudianteBLL.ObtenerEstudiantes();
-
+            EstudianteDAL estudianteDAL = new EstudianteDAL();
+            List<Estudiante> estudiantes = estudianteDAL.ObtenerEstudiantes();
+            dgvEstudiantes.Rows.Clear();
             foreach (Estudiante estudiante in estudiantes)
             {
                 dgvEstudiantes.Rows.Add(estudiante.EstudianteID.ToString(), estudiante.Nombre, estudiante.Apellido, estudiante.Email, estudiante.FechaNacimiento.ToString("yyyy-MM-dd"));
@@ -37,6 +37,12 @@ namespace CRUD_CSharp_MySQL
             txtEmail.ReadOnly = !txtEmail.ReadOnly;
             dtpFechaNacimiento.Enabled = !dtpFechaNacimiento.Enabled;
             dgvEstudiantes.Enabled = !dgvEstudiantes.Enabled;
+
+            btnNuevo.Enabled = !btnNuevo.Enabled;
+            btnAgregar.Enabled = !btnAgregar.Enabled;
+            btnEditar.Enabled = !btnEditar.Enabled;
+            btnEliminar.Enabled = !btnEliminar.Enabled;
+            btnCancelar.Enabled = !btnCancelar.Enabled;
         }
 
         private void LimpiarCampos()
@@ -57,11 +63,14 @@ namespace CRUD_CSharp_MySQL
         private void dgvEstudiantes_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             int fila = e.RowIndex;
-            txtEstudianteID.Text = dgvEstudiantes.Rows[fila].Cells[0].Value.ToString();
-            txtNombre.Text = dgvEstudiantes.Rows[fila].Cells[1].Value.ToString();
-            txtApellido.Text = dgvEstudiantes.Rows[fila].Cells[2].Value.ToString();
-            txtEmail.Text = dgvEstudiantes.Rows[fila].Cells[3].Value.ToString();
-            dtpFechaNacimiento.Text = dgvEstudiantes.Rows[fila].Cells[4].Value.ToString();
+            if (fila >= 0)
+            {
+                txtEstudianteID.Text = dgvEstudiantes.Rows[fila].Cells[0].Value.ToString();
+                txtNombre.Text = dgvEstudiantes.Rows[fila].Cells[1].Value.ToString();
+                txtApellido.Text = dgvEstudiantes.Rows[fila].Cells[2].Value.ToString();
+                txtEmail.Text = dgvEstudiantes.Rows[fila].Cells[3].Value.ToString();
+                dtpFechaNacimiento.Text = dgvEstudiantes.Rows[fila].Cells[4].Value.ToString();
+            }
         }
 
         private void btnNuevo_Click(object sender, EventArgs e)
@@ -74,6 +83,73 @@ namespace CRUD_CSharp_MySQL
         {
             LimpiarCampos();
             CambiarEstados();
+        }
+
+        private void btnAgregar_Click(object sender, EventArgs e)
+        {
+            EstudianteDAL estudianteDAL = new EstudianteDAL();
+            if (txtEstudianteID.Text == "")
+            {
+                Estudiante estudiante = new Estudiante
+                {
+                    Nombre = txtNombre.Text,
+                    Apellido = txtApellido.Text,
+                    Email = txtEmail.Text,
+                    FechaNacimiento = dtpFechaNacimiento.Value
+                };
+                estudianteDAL.AgregarEstudiante(estudiante);
+                LimpiarCampos();
+                CambiarEstados();
+                MessageBox.Show("Estudiante agregado con éxito.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                Estudiante estudiante = new Estudiante
+                {
+                    EstudianteID = int.Parse(txtEstudianteID.Text),
+                    Nombre = txtNombre.Text,
+                    Apellido = txtApellido.Text,
+                    Email = txtEmail.Text,
+                    FechaNacimiento = dtpFechaNacimiento.Value
+                };
+                estudianteDAL.ActualizarEstudiante(estudiante);
+                LimpiarCampos();
+                CambiarEstados();
+                MessageBox.Show("Estudiante modificado con éxito.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            ListarEstudiantes();
+        }
+
+        private void btnEditar_Click(object sender, EventArgs e)
+        {
+            if (txtEstudianteID.Text != "")
+            {
+                CambiarEstados();
+            }
+            else
+            {
+                MessageBox.Show("Debe seleccionar un registro para poder editar.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void btnEliminar_Click(object sender, EventArgs e)
+        {
+            EstudianteDAL estudianteDAL = new EstudianteDAL();
+            if (txtEstudianteID.Text != "")
+            {
+                DialogResult opcion = MessageBox.Show("¿Desea eliminar este registro?", "Advertencia", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (opcion == DialogResult.Yes)
+                {
+                    estudianteDAL.EliminarEstudiante(int.Parse(txtEstudianteID.Text));
+                    LimpiarCampos();
+                    ListarEstudiantes();
+                    MessageBox.Show("Estudiante eliminado.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Debe seleccionar un registro para poder eliminar.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
     }
 }

@@ -4,9 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using MySqlConnector;
-
-//using MySql.Data.MySqlClient;
+using MySql.Data.MySqlClient;
 using System.Configuration;
 using System.Windows.Forms;
 
